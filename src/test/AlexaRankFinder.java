@@ -33,6 +33,8 @@ public class AlexaRankFinder {
 	public XSSFRow row = null;
 	public XSSFCell cell = null;
 	String xlFilePath;
+	static LocalDate localDate = LocalDate.now();
+	static String today = DateTimeFormatter.ofPattern("dd/MM/yyy").format(localDate);
 
 	public AlexaRankFinder(String xlFilePath) throws Exception {
 		this.xlFilePath = xlFilePath;
@@ -57,11 +59,30 @@ public class AlexaRankFinder {
 			fos = new FileOutputStream(xlFilePath);
 			workbook.write(fos);
 			fos.close();
+			System.out.println("Entry added for: "+today);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
 		}
 		return true;
+	}
+
+	private static List<String> getRanksAndDate() {
+
+		System.setProperty("webdriver.chrome.driver", "D:\\No Longer Using\\Softwares\\drivers\\chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.get("http://alexa.com/siteinfo/tamiltechies.in");
+		WebElement global = driver.findElement(
+				By.cssSelector(".globleRank > span:nth-child(1) > div:nth-child(2) > strong:nth-child(2)"));
+		WebElement search = driver.findElement(
+				By.cssSelector(".countryRank > span:nth-child(1) > div:nth-child(2) > strong:nth-child(2)"));
+		List<String> values = new ArrayList<>();
+		values.add(today);
+		values.add(search.getText());
+		values.add(global.getText());
+		driver.close();
+		return values;
+
 	}
 
 	private static int getNumberOfRowsInExcel() {
@@ -81,10 +102,13 @@ public class AlexaRankFinder {
 					Cell cell = (Cell) cellIter.next();
 					col = cell.getColumnIndex();
 					dataCount[col] += 1;
-					DataFormatter df = new DataFormatter();
 				}
 			}
 			is.close();
+			if (wb.getSheetAt(0).getRow(dataCount[col] - 1).getCell(0).toString().equals(today)) {
+				System.err.println("Already Rank checked");
+				return 0;
+			}
 			return dataCount[col];
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,38 +116,18 @@ public class AlexaRankFinder {
 		return 0;
 	}
 
-	private static List<String> getRanksAndDate() {
-		LocalDate localDate = LocalDate.now();
-		String today = DateTimeFormatter.ofPattern("dd/MM/yyy").format(localDate);
-		System.setProperty("webdriver.chrome.driver", "D:\\No Longer Using\\Softwares\\drivers\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		driver.get("http://alexa.com/siteinfo/tamiltechies.in");
-		String title = driver.getTitle();
-		String url = driver.getCurrentUrl();
-		System.out.println(title + url);
-		WebElement global = driver.findElement(
-				By.cssSelector(".globleRank > span:nth-child(1) > div:nth-child(2) > strong:nth-child(2)"));
-		WebElement search = driver.findElement(
-				By.cssSelector(".countryRank > span:nth-child(1) > div:nth-child(2) > strong:nth-child(2)"));
-		List<String> values = new ArrayList<>();
-		values.add(today);
-		values.add(search.getText());
-		values.add(global.getText());
-		driver.close();
-		return values;
-
-	}
-
 	public static void main(String args[]) throws Exception {
 		AlexaRankFinder ems = new AlexaRankFinder("D:\\ExcelSheet.xlsx");
 		int row = 0;
 		int column = getNumberOfRowsInExcel();
-		List<String> rankAndDate = getRanksAndDate();
-		Iterator<String> iter = rankAndDate.iterator();
-		while (iter.hasNext()) {
-			for (int i = 0; i < rankAndDate.size(); i++) {
-				row = i;
-				ems.setCellData("Rank Checker", row, column, iter.next());
+		if (column != 0) {
+			List<String> rankAndDate = getRanksAndDate();
+			Iterator<String> iter = rankAndDate.iterator();
+			while (iter.hasNext()) {
+				for (int i = 0; i < rankAndDate.size(); i++) {
+					row = i;
+					ems.setCellData("Rank Checker", row, column, iter.next());
+				}
 			}
 		}
 	}
