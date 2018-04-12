@@ -119,10 +119,6 @@ public class AlexaRankFinder {
 		int row = 0;
 		int column = getNumberOfRowsInExcel();
 		List<String> rankAndDate = getRanksAndDate();
-		List<String> al = new ArrayList<String>();
-		al.add("a");
-		al.add("b");
-		al.add("c");
 		Iterator<String> iter = rankAndDate.iterator();
 		while (iter.hasNext()) {
 			for (int i = 0; i < rankAndDate.size(); i++) {
