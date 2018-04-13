@@ -35,7 +35,7 @@ public class AlexaRankFinder {
 	String xlFilePath;
 	static LocalDate localDate = LocalDate.now();
 	static String today = DateTimeFormatter.ofPattern("dd/MM/yyy").format(localDate);
-
+	
 	public AlexaRankFinder(String xlFilePath) throws Exception {
 		this.xlFilePath = xlFilePath;
 		fis = new FileInputStream(xlFilePath);
