@@ -26,6 +26,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 public class AlexaRankFinder {
 	private static String EXCELPATH = "D:\\ExcelSheet.xlsx";
+	private static String DRIVERPATH = "D:\\No Longer Using\\Softwares\\drivers\\chromedriver.exe";
+	
+	private static String URL = "https://www.alexa.com/siteinfo/tamiltechies.in";
 	public FileInputStream fis = null;
 	public FileOutputStream fos = null;
 	public XSSFWorkbook workbook = null;
@@ -69,9 +72,9 @@ public class AlexaRankFinder {
 
 	private static List<String> getRanksAndDate() {
 
-		System.setProperty("webdriver.chrome.driver", "D:\\No Longer Using\\Softwares\\drivers\\chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", DRIVERPATH);
 		WebDriver driver = new ChromeDriver();
-		driver.get("http://alexa.com/siteinfo/tamiltechies.in");
+		driver.get(URL);
 		WebElement global = driver.findElement(
 				By.cssSelector(".globleRank > span:nth-child(1) > div:nth-child(2) > strong:nth-child(2)"));
 		WebElement search = driver.findElement(
@@ -117,7 +120,7 @@ public class AlexaRankFinder {
 	}
 
 	public static void main(String args[]) throws Exception {
-		AlexaRankFinder ems = new AlexaRankFinder("D:\\ExcelSheet.xlsx");
+		AlexaRankFinder ems = new AlexaRankFinder(EXCELPATH);
 		int row = 0;
 		int column = getNumberOfRowsInExcel();
 		if (column != 0) {
